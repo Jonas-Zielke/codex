@@ -3,6 +3,7 @@
 The :class:`~codex_cli.client.CodexCLI` class shells out to the Codex CLI binary and parses
 its JSON event stream, which means Codex can be used from Python without an API key.
 
+
 In addition to re-exporting :class:`CodexCLI` and related data classes, this module exposes
 module-level convenience helpers that mirror the CLI commands. They use a shared
 ``CodexCLI`` instance that can be customised via :func:`set_default_client`.
