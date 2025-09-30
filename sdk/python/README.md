@@ -133,3 +133,20 @@ The package re-exports several small data classes for ergonomic access to Codex 
 
 Refer to the docstrings in ``codex_cli.client`` for the full set of parameters and
 return types.
+
+## Collaborative workspaces and MCP server
+
+The :mod:`codex_cli.multi_agent` module provides a lightweight abstraction for
+coordinating several agents that work on the same local project tree.  Create a
+workspace with :class:`codex_cli.MultiAgentWorkspace`, register agents for the
+directories they should operate on, and issue prompts through
+``workspace.run("alice", "add a README")``.  Each agent keeps track of its
+own timestamped history via :class:`codex_cli.AgentSession` while sharing the
+underlying Codex client.  Call ``workspace.history()`` to retrieve a
+chronological view across all agents.
+
+For multi-agent frameworks that speak the Model Context Protocol, the module
+also exposes :class:`codex_cli.LocalProjectMCPServer`.  It adapts a workspace to
+a small MCP server that implements ``initialize``, ``tools/list`` and
+``tools/call`` so that Codex can be embedded inside other orchestrators without
+depending on the Rust implementation.
