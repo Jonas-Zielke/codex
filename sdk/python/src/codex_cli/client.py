@@ -284,12 +284,13 @@ class CodexCLI:
         client_id: Optional[str] = None,
         stream_output: bool = True,
         env: Optional[Mapping[str, str]] = None,
-    ) -> None:
+    ) -> Optional[str]:
         """Authenticate with Codex.
 
         For ChatGPT based login, the CLI starts a local web server and prints a URL
         to the terminal. Set ``stream_output=False`` to capture the CLI output instead of
-        streaming it directly to stdout/stderr.
+        streaming it directly to stdout/stderr. When ``stream_output`` is ``False`` the
+        decoded combined stdout/stderr text is returned on success.
         """
 
         args = [self._binary, "login"]
@@ -308,6 +309,7 @@ class CodexCLI:
 
         cli_env = _build_cli_env(self._base_env, env)
 
+        captured_output: Optional[str] = None
         if stream_output:
             proc = subprocess.run(args, env=cli_env, check=False)
         else:
@@ -318,14 +320,20 @@ class CodexCLI:
                 text=True,
                 check=False,
             )
+            captured_output = "".join(filter(None, [proc.stdout, proc.stderr]))
 
         if proc.returncode != 0:
+            message = captured_output.strip() if captured_output else None
+            if not message and stream_output:
+                message = "codex login exited with a non-zero status"
             raise CodexLoginError(
-                f"codex login exited with status {proc.returncode}",
+                message or f"codex login exited with status {proc.returncode}",
             )
 
         if not stream_output:
-            return None
+            return captured_output or ""
+
+        return None
 
     # ------------------------------------------------------------------
 
