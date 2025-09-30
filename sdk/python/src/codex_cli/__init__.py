@@ -14,6 +14,7 @@ from __future__ import annotations
 from typing import Callable, Dict, Iterable, Mapping, Optional, Sequence, Union
 
 from .client import CodexCLI, CodexRunResult, LoginMode, LoginStatus, Usage
+from .multi_agent import AgentRun, AgentSession, LocalProjectMCPServer, MultiAgentWorkspace
 from .exceptions import CodexCLIError, CodexLoginError, CodexRunError
 
 _default_client: Optional[CodexCLI] = None
@@ -134,6 +135,10 @@ __all__ = [
     "LoginMode",
     "LoginStatus",
     "Usage",
+    "AgentRun",
+    "AgentSession",
+    "MultiAgentWorkspace",
+    "LocalProjectMCPServer",
     "get_client",
     "set_default_client",
     "reset_default_client",
