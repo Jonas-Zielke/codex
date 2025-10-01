@@ -7,6 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.util.Vector;
 
@@ -29,7 +30,17 @@ public final class MovementListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerMove(PlayerMoveEvent event) {
+        if (event.isCancelled()) {
+            return;
+        }
+
         Player player = event.getPlayer();
+
+        if (event instanceof PlayerTeleportEvent) {
+            recordSample(player, event);
+            return;
+        }
+
         if (player.hasPermission(config.getBypassPermission()) || hasTemporaryBypass(player)) {
             recordSample(player, event);
             return;
