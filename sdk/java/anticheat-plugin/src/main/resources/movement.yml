@@ -1,0 +1,27 @@
+physics:
+  gravity: 0.08            # Downward acceleration applied per tick while airborne
+  air-drag: 0.91           # Drag multiplier while airborne
+  ground-friction: 0.6     # Friction applied to horizontal velocity when on ground
+
+thresholds:
+  horizontal-percent: 15.0          # Allowable % deviation from expected horizontal velocity
+  vertical-percent: 20.0            # Allowable % deviation from expected vertical velocity
+  collision-horizontal-bonus: 0.2   # Additional meters allowed when colliding with solid blocks
+  collision-vertical-bonus: 0.1     # Additional meters allowed vertically when colliding
+  minimum-horizontal: 0.05          # Minimum tolerated horizontal delta in meters
+  minimum-vertical: 0.05            # Minimum tolerated vertical delta in meters
+
+violations:
+  decay-seconds: 8        # Violations expire from the rolling buffer after this many seconds
+  max-buffer: 20          # Hard cap on stored violations per player
+  triggers:
+    notify:
+      enabled: true
+      type: notify
+      threshold: 3        # Notify staff after this many active violations
+    set-back:
+      enabled: true
+      type: set-back
+      threshold: 5        # Teleport player back to their last safe location after this many violations
+
+bypass-permission: anticheat.movement.bypass
