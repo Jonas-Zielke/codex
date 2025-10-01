@@ -103,7 +103,14 @@ public final class TransactionWatcher implements Listener {
     }
 
     private void evaluate(Player player, SnapshotState state, MutationType type, long sequence, Set<Integer> touchedSlots) {
-        InventorySnapshot snapshot = captureSnapshot(player.getOpenInventory());
+        InventoryView view = player.getOpenInventory();
+        InventorySnapshot snapshot = captureSnapshot(view);
+
+        if (!state.isSameView(view)) {
+            state.resetForView(view, snapshot);
+            return;
+        }
+
         InventorySnapshot previous = state.lastSnapshot;
 
         if (previous == null) {
@@ -132,7 +139,7 @@ public final class TransactionWatcher implements Listener {
                 logPayload.put("rapidSwaps", rapidSwaps);
 
                 transactionLogger.warning(logPayload.toString());
-                revertSnapshot(player, previous);
+                revertSnapshot(player, state, previous);
             }
             return;
         }
@@ -167,8 +174,11 @@ public final class TransactionWatcher implements Listener {
         return Optional.empty();
     }
 
-    private void revertSnapshot(Player player, InventorySnapshot snapshot) {
+    private void revertSnapshot(Player player, SnapshotState state, InventorySnapshot snapshot) {
         InventoryView view = player.getOpenInventory();
+        if (!state.isSameView(view)) {
+            return;
+        }
         for (Map.Entry<Integer, ItemStack> entry : snapshot.slots.entrySet()) {
             view.setItem(entry.getKey(), cloneItem(entry.getValue()));
         }
@@ -224,11 +234,22 @@ public final class TransactionWatcher implements Listener {
         private long sequenceCounter;
         private Instant cooldownUntil = Instant.EPOCH;
         private final ArrayDeque<Long> swapTimestamps = new ArrayDeque<>();
+        private InventoryView lastView;
 
         private SnapshotState() {}
 
         private long nextSequence() {
             return ++sequenceCounter;
+        }
+
+        private boolean isSameView(InventoryView view) {
+            return lastView == view;
+        }
+
+        private void resetForView(InventoryView view, InventorySnapshot snapshot) {
+            lastView = view;
+            lastSnapshot = snapshot;
+            swapTimestamps.clear();
         }
 
         private boolean registerSwaps(long nowNanos, int swapCount, double thresholdPerSecond) {
