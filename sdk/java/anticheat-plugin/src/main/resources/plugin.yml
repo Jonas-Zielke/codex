@@ -1,7 +1,0 @@
-name: MovementAntiCheat
-version: 1.0.0
-main: com.example.anticheat.movement.MovementPlugin
-author: ExampleTeam
-description: Movement anti-cheat listener that validates player motion.
-api-version: 1.20
-depend: []
